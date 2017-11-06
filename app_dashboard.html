@@ -30,7 +30,7 @@
 			<div class="panel-footer">	
 	<div class="row">
 		<div class="col-md-9"><h4>Saldo Energiekosten</h4></div>
-		<div class="col-md-3" style="text-align:right;"><h4><span id="saldo_value" data="0" style="color:red"></span></h4></div>
+		<div class="col-md-3" style="text-align:right;"><h4><span id="saldo_value" data="0"></span></h4></div>
 	</div>	
 	<div class="row">
 		<div class="col-md-9">Ihre Energiekosten Ersparnis</div>
@@ -100,7 +100,7 @@ var app_run = function() {
 	var balancing=function() {
 			var sum=0;
 			$.each($('.value_balance'),function() {sum+=1*$(this).attr('data'); });			
-			$('#saldo_value').html(((sum)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			$('#saldo_value').html(((sum)/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			$('#invest_value').attr('data',(sum*(-1)));
 			var saving=1+((1/($('#balance').attr('data')*1))*(sum*-1));
 			$('#saldo_saving').html(Math.round(100*saving).toLocaleString()+"%");
