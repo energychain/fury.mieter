@@ -49,11 +49,17 @@
 	</div>
 	<div class="panel-body">
 			<div class="row">
-				<div class="col-md-3"><h4>pro Jahr</h4><span id='infra_year'></span></div>
-				<div class="col-md-3"><h4>ab</h4><span id='infra_time'></span></div>
-				<div class="col-md-3"></div>
-				<div class="col-md-3" style='text-align:right'><h4>Kosten</h4><span id='infra_bal' data='0'></span></div>
+				<div class="col-md-9"><h4>pro Jahr</h4><span id='infra_year'></span> ab <span id='infra_time'></span></div>				
+				<div class="col-md-3" style='text-align:right'><span id='infra_bal' data='0'></span></div>
 			</div>
+			<div class="row">
+				<div class="col-md-9"><h4>Übertrag</h4></div>								
+				<div class="col-md-3" style='text-align:right'><span id='infra_sko' data='0'></span></div>
+			</div>			
+			<div class="row">
+				<div class="col-md-9"><h4>Saldo Infrastrukturkosten</h4></div>								
+				<div class="col-md-3" style='text-align:right'><span id='infra_saldo' data='0'></span></div>
+			</div>			
 	</div>
 	</div>
   	<div class="panel panel-success">
@@ -72,7 +78,7 @@
 			<hr/>
 			<div class="row">
 				<div class="col-md-6"><h4>Saldo</h4></div>
-				<div class="col-md-6" style='text-align:right'><span id='invest_saldo'></span></div>
+				<div class="col-md-6" style='text-align:right'><h4><span id='invest_saldo'></span></h4></div>
 			</div>
 			<div class="row">
 				<div class="col-md-9">Ihr Energiepreis inkl. Infrastrukturkosten</div>
@@ -100,10 +106,17 @@ var app_run = function() {
 			$('#saldo_price').html((price/10000).toLocaleString(undefined, { minimumFractionDigits:4, maximumFractionDigits:4 })+" €/KWh");
 	}
 	var invest_calc = function() {
-			$('#invest_cap').html((($('#invest_cap').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			var infra_sko=($('#infra_sko').attr('data-haben')*1)-($('#infra_sko').attr('data-soll')*1);
+			var infra_saldo=($('#invest_cap').attr('data')*1)+infra_sko;
 			$('#invest_value').html((($('#invest_value').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-			$('#invest_saldo').html((($('#invest_cap').attr('data')*1+$('#invest_value').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-			$('#invest_price').html(((($('#invest_cap').attr('data')*1+$('#invest_value').attr('data')*1)/10000000)/($('#balance').attr('data-base')/-1000)).toLocaleString(undefined, { minimumFractionDigits:4, maximumFractionDigits:4 })+" €/KWh");
+			$('#invest_saldo').html(((infra_saldo+$('#invest_value').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			$('#invest_price').html((((infra_saldo+$('#invest_value').attr('data')*1)/10000000)/($('#balance').attr('data-base')/-1000)).toLocaleString(undefined, { minimumFractionDigits:4, maximumFractionDigits:4 })+" €/KWh");
+			
+			$('#infra_sko').html((infra_sko/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			
+			$('#infra_saldo').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			$('#invest_cap').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			
 	}
 	var renderMPS=function(address) {
 		node.roleLookup().then(function(rl) {
@@ -226,6 +239,16 @@ var app_run = function() {
 							$('#infra_bal').html(((years*reading.power.toString())/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 							$('#invest_cap').attr('data',years*reading.power.toString());
 							invest_calc();
+							node.stromkonto(document.stromdao_blg).then(function(sko) {									
+									sko.balancesHaben(infra_address).then(function(haben) {
+											$('#infra_sko').attr('data-haben',haben);
+											invest_calc();
+									});
+									sko.balancesSoll(infra_address).then(function(soll) {
+											$('#infra_sko').attr('data-soll',soll);
+											invest_calc();
+									});									
+							});
 					});	
 				});	
 			});	
