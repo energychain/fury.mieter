@@ -1,3 +1,4 @@
+<script src="Chart.bundle.min.js"></script>
 <div id="app_router">
 	<div class="row">
 	<div class="col-md-6"><h1 id="long_name">Mieter</h1></div>
@@ -21,11 +22,13 @@
 	</div>	
 	
 
-
-	<h3>Gutschriften aus Lokaler Erzeugung</h3>
+	<hr/>
+	<h4>Gutschriften aus Lokaler Erzeugung</h4>
 	<table id="assets" class="table">
 		<tr><th>Energiequelle</th><th>Vergütung</th><th>Bezogene Menge</th><th style="text-align:right">Gutschrift</th></tr>
 	</table>
+	
+	<div id="add_energie"></div>
 	</div>
 			<div class="panel-footer">	
 	<div class="row">
@@ -56,7 +59,14 @@
 				<div class="col-md-9"><h4>Übertrag</h4>aus vorherigen Abrechnungen</div>								
 				<div class="col-md-3" style='text-align:right'><span id='infra_sko' data='0'></span></div>
 			</div>			
+			
+			<div id="add_infra"></div>
+				
 		</div>
+		
+		
+			
+			
 			<div class="panel-footer">
 			<div class="row">
 				<div class="col-md-9"><h4>Saldo Infrastrukturkosten</h4></div>								
@@ -118,6 +128,7 @@ var app_run = function() {
 			$('#infra_sko').html((infra_sko/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			
 			$('#infra_saldo').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			$('#infra_saldo').attr('data',infra_saldo);
 			$('#invest_cap').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			
 	}
@@ -129,7 +140,7 @@ var app_run = function() {
 						html+="<tr id='asset_"+address+"'>";
 						html+="<td>"+resolve(address)+"</td>";
 						html+="<td><span id='cost_"+address+"'></span></td>";
-						html+="<td><span id='base_"+address+"'></span></td>";
+						html+="<td><span id='base_"+address+"' class='base_balance' data='0'></span></td>";
 						html+="<td style='text-align:right'><span  id='haben_"+address+"' class='value_balance' data='0'></span></td>";
 						html+="</tr>";
 						$('#assets').append(html);
@@ -172,12 +183,8 @@ var app_run = function() {
 			var balanceIt = function() {
 				var balance = $('#balance').attr('data-haben')-$('#balance').attr('data-soll');
 				$('#balance').attr('data',balance);
-				$('#balance').html( (balance/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €" );
-				if(balance<0) {
-					$('#balance').css('color','red');
-				} else {
-					$('#balance').css('color','blue');
-				}				
+				$('#balance').html( (balance/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €" );
+				
 				var balance = $('#balance').attr('data-base-haben')-$('#balance').attr('data-base-soll');
 				$('#balance').attr('data-base',balance);
 				$('#base').html( (balance/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh" );
@@ -256,6 +263,41 @@ var app_run = function() {
 				});	
 			});	
 	});	
+
+	if(typeof document.stromdao_uiprofile == "undefined") {
+			//eval(document.stromdao_uiprofile);
+		if(!$('#steuern').exists()) {
+			var html="<hr/><h4 id='steuern'>Steuern, Abgaben und Umlagen</h4>";
+			html+="<table class='table'>";
+			html+="<tr><td>EEG-Umlage</td><td style='text-align:right' id='eeg'></td></tr>";			
+			html+="<tr><td>Umsatzsteuer</td><td style='text-align:right' id='ust'></td></tr>";			
+			html+="</table>";			
+			$('#add_energie').html(html);
+			
+			var html="<hr/><h4 id='steuern'>Steuern, Abgaben und Umlagen</h4>";
+			html+="<table class='table'>";		
+			html+="<tr><td>EEG-Umlage (Gutschrift)</td><td style='text-align:right' id='eeg_infra'></td></tr>";	
+			html+="<tr><td>Umsatzsteuer</td><td style='text-align:right' id='ust_infra'></td></tr>";			
+			html+="</table>";			
+			$('#add_infra').html(html);
+		}
+		var invest_calc_old=invest_calc;
+		var invest_calc=function() {
+				var eeg=$('#balance').attr('data-base')*679.2;
+				$('#eeg').html((eeg/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				invest_calc_old();
+				var ust=($('#balance').attr('data')/1.19)*0.19;
+				$('#ust').html((ust/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				
+				var ust=($('#infra_saldo').attr('data')/1.19)*0.19;
+				$('#ust_infra').html((ust/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				var sum=0;
+				$.each($('.base_balance'),function() {sum+=1*$(this).attr('data'); });	
+				var eeg=sum*679.2;
+				$('#eeg_infra').html((eeg/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+		}
+	}
+
 	
 }
 $('.navbar-left').click(function() { app("app_dashboard.html"); });

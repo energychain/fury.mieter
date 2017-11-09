@@ -97,6 +97,18 @@ $('#open_username').click(function() {
 					});
 				}
 			});
+		rl.relations(wallet.address,11).then(function(tx) {
+			node.stringstorage(tx).then(function(str) {
+					str.str().then(function(ipfshash) {
+						account_obj.decrypt(ipfshash).then(function(ipfshash) {
+							console.log("Try to load profile",ipfshash);
+							$.get("https://fury.network/ipfs/"+ipfshash,function(data) {
+									document.stromdao_uiprofile=data;	
+							});
+						});
+					});
+			});			
+		});
 		});
 	});
 });	
