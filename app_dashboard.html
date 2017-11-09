@@ -129,8 +129,7 @@ var app_run = function() {
 			
 			$('#infra_saldo').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			$('#infra_saldo').attr('data',infra_saldo);
-			$('#invest_cap').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-			
+			$('#invest_cap').html((infra_saldo/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");						
 	}
 	var renderMPS=function(address) {
 		node.roleLookup().then(function(rl) {
@@ -158,7 +157,7 @@ var app_run = function() {
 														var base_html=((base*factor)/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh";
 														$('#cost_'+address).html(((haben/base)/10000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €/KWh");														
 														$('#base_'+address).html(base_html);	
-														$('#base_'+address).attr('data',base);														
+														$('#base_'+address).attr('data',base*factor);														
 														balancing();
 													});
 											});
@@ -187,7 +186,7 @@ var app_run = function() {
 				
 				var balance = $('#balance').attr('data-base-haben')-$('#balance').attr('data-base-soll');
 				$('#balance').attr('data-base',balance);
-				$('#base').html( (balance/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh" );
+				$('#base').html( (balance/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh" );				
 				if(balance<0) {
 					$('#base').css('color','red');
 				} else {
@@ -266,6 +265,10 @@ var app_run = function() {
 
 	if(typeof document.stromdao_uiprofile != "undefined") {
 		eval(document.stromdao_uiprofile);		
+		
+		
+		
+
 	}
 
 	
