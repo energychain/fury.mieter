@@ -37,3 +37,6 @@ function app(frm) {
 	});	
 }
 $(document).ready(app("./login_frm.html"));
+$.fn.exists = function () {
+    return this.length !== 0;
+}

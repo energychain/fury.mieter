@@ -25,14 +25,7 @@
 						</div>
 <script>
 function open_username(node) {
-	
-	window.localStorage.setItem("address_"+"0xE7159EA1d72625c53749e19C3fB9093d2Dea2a53".toLowerCase(),"Mieter: Musterfamilie");
-	window.localStorage.setItem("address_"+"0x666C7b36432A977320792C4B198B283Ae21c0048".toLowerCase(),"Mieter: 1P Haushalt");
-	window.localStorage.setItem("address_"+"0x5EC43eE47affb1E0D7705D675E7F451Da26Ea08c".toLowerCase(),"eMobil");
-	window.localStorage.setItem("address_"+"0x3a6259CD89AFbA086DC09676310F29f15FB67aCc".toLowerCase(),"Stromspeicher");
-	window.localStorage.setItem("address_"+"0x164c9ee802256820b44668A2F1665F67E36531d2".toLowerCase(),"Photovoltaik");
-	window.localStorage.setItem("address_"+"0x0b00dD24e5EAB94B590EeD4B1CC0634a648290C3".toLowerCase(),"Sekundär EE Vermarktung");
-	window.localStorage.setItem("address_"+"0x3Dfb31fF5111B98947B8f527f387cbC0637e66E1".toLowerCase(),"Speicherladung");
+
 	
 	$('.account').html(resolve(node.wallet.address));
 	node.roleLookup().then(function(rl) {
@@ -98,7 +91,7 @@ $('#open_username').click(function() {
 				}
 			});
 		rl.relations(wallet.address,11).then(function(tx) {
-			if(tx!="0x0000000000000000000000000000000000000000") {
+			if((tx!="0x0000000000000000000000000000000000000000")&& (location.hostname != "localhost") && (location.hostname != "127.0.0.1")) {
 				node.stringstorage(tx).then(function(str) {
 						str.str().then(function(ipfshash) {
 							account_obj.decrypt(ipfshash).then(function(ipfshash) {
@@ -110,7 +103,7 @@ $('#open_username').click(function() {
 						});
 				});			
 			} else {
-				$.get("./ui_profile.js",function(data) {
+				$.get("./ui_profile.js?nonce="+Math.random(),function(data) {
 									document.stromdao_uiprofile=data;	
 				});
 			}

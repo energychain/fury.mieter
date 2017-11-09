@@ -6,7 +6,8 @@
 					<a href="https://stromdao.de/"><img src="https://demo.stromdao.de/stromdao_logo.png"></a><br>
 					<em style="color:#999999">digital energy infrastructure for tomorrow.</em>
 		</div>
-	</div>		
+	</div>	
+	<div id="initial_header"></div>	
 	<hr/>
 	<div class="panel panel-danger">
 	<div class="panel-heading">
@@ -23,10 +24,18 @@
 	
 
 	<hr/>
-	<h4>Gutschriften aus Lokaler Erzeugung</h4>
-	<table id="assets" class="table">
-		<tr><th>Energiequelle</th><th>Vergütung</th><th>Bezogene Menge</th><th style="text-align:right">Gutschrift</th></tr>
-	</table>
+	<div class="row">
+		<div class="col-md-9"><h4><a href="#" id='dsp_assets'>Gutschriften aus Lokaler Erzeugung <span id='tkl_assets'>&raquo;</span></a></h4></div>
+		<div class="col-md-3" style='text-align:right'><span id='gutschriften'  data='0'></span></div>
+	</div>
+	<div id="assets" class="table" style="display:none">
+		<div class="row">
+			<div class="col-md-3"><strong>Energiequelle</strong></div>
+			<div class="col-md-3 hidden-xs hidden-sm"><strong>Vergütung</strong></div>
+			<div class="col-md-3 hidden-xs hidden-sm"><strong>Bezogene Menge</strong></div>
+			<div class="col-md-3" style="text-align:right"><strong>Gutschrift</strong></div>
+		</div>		
+	</div>
 	
 	<div id="add_energie"></div>
 	</div>
@@ -64,9 +73,6 @@
 				
 		</div>
 		
-		
-			
-			
 			<div class="panel-footer">
 			<div class="row">
 				<div class="col-md-9"><h4>Saldo Infrastrukturkosten</h4></div>								
@@ -102,14 +108,14 @@
 </div>
 
 <script>
-$.fn.exists = function () {
-    return this.length !== 0;
-}
+
 var app_run = function() {
 	$('#long_name').html(window.localStorage.getItem("address_"+node.wallet.address.toLowerCase()));
 	var balancing=function() {
 			var sum=0;
-			$.each($('.value_balance'),function() {sum+=1*$(this).attr('data'); });			
+			$.each($('.value_balance'),function() {sum+=1*$(this).attr('data'); });		
+			$('#gutschriften').html(((($('#balance').attr('data')*1)-sum)/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");;
+				
 			$('#saldo_value').html(((sum)/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			$('#invest_value').attr('data',(sum*(-1)));
 			var saving=1+((1/($('#balance').attr('data')*1))*(sum*-1));
@@ -136,12 +142,12 @@ var app_run = function() {
 			rl.relations(address,45).then(function(cutkn_address) {
 					if(!$('#asset_'+address).exists()) {
 						var html="";
-						html+="<tr id='asset_"+address+"'>";
-						html+="<td>"+resolve(address)+"</td>";
-						html+="<td><span id='cost_"+address+"'></span></td>";
-						html+="<td><span id='base_"+address+"' class='base_balance' data='0'></span></td>";
-						html+="<td style='text-align:right'><span  id='haben_"+address+"' class='value_balance' data='0'></span></td>";
-						html+="</tr>";
+						html+="<div class='row' id='asset_"+address+"'>";
+						html+="<div class='col-md-3'>"+resolve(address)+"</div>";
+						html+="<div class='col-md-3 hidden-xs hidden-sm'><span id='cost_"+address+"'></span></div>";
+						html+="<div class='col-md-3 hidden-xs hidden-sm'><span id='base_"+address+"' class='base_balance' data='0'></span></div>";
+						html+="<div class='col-md-3' style='text-align:right'><span  id='haben_"+address+"' class='value_balance' data='0'></span></div>";
+						html+="</div>";
 						$('#assets').append(html);
 					}
 					$('#asset_'+address).attr('data',cutkn_address);		
@@ -273,6 +279,10 @@ var app_run = function() {
 
 	
 }
+$('#dsp_assets').click(function() {
+	$('#assets').toggle();
+	$('#tkl_assets').toggle();		
+});
 $('.navbar-left').click(function() { app("app_dashboard.html"); });
 $(document).ready(function() {
 	app_run();
