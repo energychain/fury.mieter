@@ -28,6 +28,16 @@ if(!$('#steuern').exists()) {
 			html+="</table>";			
 			$('#add_infra').html(html);
 			
+			var html="<hr/><h4><a href='#' id='steuern_balance'>Steuern, Abgaben und Umlagen <span id='tkl_balance'>&raquo;</span></a></h4>";
+			html+="<table class='table' style='display:none' id='tbl_balance'>";		
+			html+="<tr><td>EEG Umlage</td><td><span class='balance-eeg'></span></td><td style='text-align:right' id='eeg_balance'></td></tr>";	
+			html+="<tr><td>Umsatzsteuer</td><td><span class='balance-eur'></span></td><td style='text-align:right' id='ust_balance'></td></tr>";		
+			html+="<tr><td>Konzessionsabgabe</td><td><span class='balance-kwh'></span></td><td style='text-align:right' id='konz_balance'></td></tr>";			
+			html+="<tr><td>KWK Umlage </td><td><span class='balance-kwh'></span></td><td style='text-align:right' id='kwk_balance'></td></tr>";	
+			html+="<tr><td>Strom NEV §19</td><td><span class='balance-kwh'></span></td><td style='text-align:right' id='stromnev_balance'></td></tr>";	
+			html+="</table>";			
+			$('#add_balance').html(html);
+			
 			$('#steuern').click(function() {
 					invest_calc();
 					$('#tbl_energy').toggle();	
@@ -38,12 +48,19 @@ if(!$('#steuern').exists()) {
 					$('#tbl_infra').toggle();			
 					$('#tkl_infra').toggle();
 			});
-			$('#initial_header').html("<h4>Anschluss</h4>Max Mustermann<br/>Gerhard Weiser Ring 29<br/>69256 Mauer");
+			$('#steuern_balance').click(function() {
+					invest_calc();
+					$('#tbl_balance').toggle();			
+					$('#tkl_balance').toggle();
+			});
+			$('#initial_header').html("<h4>Anschluss</h4>Wilde Hilde<br/>Gerhard Weiser Ring 29<br/>69256 Mauer");
 		}
 		var invest_calc_old=invest_calc;
 		var invest_calc=function() {
 				var eeg=$('#balance').attr('data-base')*679.2;
 				$('#eeg').html((eeg/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				$('.balance-eeg').html("für "+($('#balance').attr('data-base')/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh");
+				$('#eeg_balance').html((eeg/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 				var konz=$('#balance').attr('data-base')*132;
 				$('#konz').html((konz/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 				var kwk=$('#balance').attr('data-base')*46.3;
@@ -59,19 +76,30 @@ if(!$('#steuern').exists()) {
 				
 				$('.based-kwh').html("für "+($('#balance').attr('data-base')/-1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh");
 				$('.based-eur').html("für "+($('#balance').attr('data')/-10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			
 				var sum=0;
 				$.each($('.base_balance'),function() {sum+=1*$(this).attr('data'); });	
 				var eeg=sum*679.2;
 				$('#eeg_infra').html((eeg/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 				var konz=sum*132;
-				$('#konz_infra').html((konz/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-				
+				$('#konz_infra').html((konz/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");				
 				var kwk=sum*46.3;
-				$('#kwk_infra').html((kwk/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-				
+				$('#kwk_infra').html((kwk/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");				
 				var stromnev=sum*38.8;
-				$('#stromnev_infra').html((stromnev/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
-		
+				$('#stromnev_infra').html((stromnev/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");		
 				$('.infra-kwh').html("für "+(sum/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh");
 				$('.infra-eur').html("für "+($('#infra_saldo').attr('data')/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				
+				$('#ust_balance').html(((($('#invest_saldo').attr('data')/1.19)*0.19)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");;
+				//$('.balance-eur').html("für "+($('#invest_saldo').attr('data')/10000000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh");
+				
+				console.log("SUM",sum);
+				var kwh_balance=($('#balance').attr('data-base')*1)+sum;
+				var konz=kwh_balance*132;
+				var kwk=kwh_balance*46.3;
+				var stromnev=kwh_balance*38.8;
+				$('#konz_balance').html((konz/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				$('#kwk_balance').html((kwk/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				$('#stromnev_balance').html((stromnev/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+				$('.balance-kwh').html("für "+(kwh_balance/1000).toLocaleString(undefined, { minimumFractionDigits:3, maximumFractionDigits:3 })+" KWh");
 		}

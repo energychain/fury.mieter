@@ -82,7 +82,7 @@
 	</div>
   	<div class="panel panel-success">
 		<div class="panel-heading">
-			<h2 class="panel-title">&raquo;&nbsp;Umlage</h2>
+			<h2 class="panel-title">&raquo;&nbsp;Gesamtbilanz</h2>
 		</div>
 		<div class="panel-body">
 			<div class="row">
@@ -93,6 +93,7 @@
 				<div class="col-md-6"><h4>Infrastrukturkosten</h4></div>
 				<div class="col-md-6" style='text-align:right'><span id='invest_cap' data="0"></span></div>
 			</div>
+			<div id="add_balance"></div>
 			</div>
 			<div class="panel-footer">
 			<div class="row">
@@ -105,6 +106,7 @@
 			</div>					
 		</div>
 	</div>
+	<div id="initial_footer"></div>	
 </div>
 
 <script>
@@ -129,6 +131,7 @@ var app_run = function() {
 			var infra_saldo=($('#invest_cap').attr('data')*1)+infra_sko;
 			$('#invest_value').html((($('#invest_value').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
 			$('#invest_saldo').html(((infra_saldo+$('#invest_value').attr('data')*1)/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
+			$('#invest_saldo').attr('data',(infra_saldo+$('#invest_value').attr('data')*1));
 			$('#invest_price').html((((infra_saldo+$('#invest_value').attr('data')*1)/10000000)/($('#balance').attr('data-base')/-1000)).toLocaleString(undefined, { minimumFractionDigits:4, maximumFractionDigits:4 })+" €/KWh");
 			
 			$('#infra_sko').html((infra_sko/10000000).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 })+" €");
